@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ČAS SE RESETOVAL: ZÁHADA — 2. díl</title>
+<style>
+:root{--bg:#0b0d12;--card:#141923;--text:#f1f3f6;--muted:#aeb6c4;--accent:#8ab4ff;--border:#293141}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#182033 0,#0b0d12 48%);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+header{padding:28px 18px 14px;text-align:center}
+h1{margin:0;font-size:clamp(25px,5vw,43px);letter-spacing:.5px}
+.subtitle{color:var(--muted);margin-top:7px}
+.wrap{max-width:900px;margin:auto;padding:15px}
+.panel{background:rgba(20,25,35,.94);border:1px solid var(--border);border-radius:22px;padding:22px;box-shadow:0 18px 50px #0008}
+.controls{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+button{border:1px solid var(--border);background:#1b2230;color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;font-size:15px}
+button:hover{background:#263148}
+select{border:1px solid var(--border);background:#1b2230;color:var(--text);padding:10px 14px;border-radius:12px;font-size:15px}
+.chapter{display:none}
+.chapter.active{display:block}
+.chapter h2{font-size:29px;margin:5px 0 18px}
+.chapter p{font-size:18px;line-height:1.78;margin:0 0 15px}
+.quote{border-left:4px solid var(--accent);background:#0e131d;padding:13px 17px;border-radius:0 12px 12px 0;margin:18px 0;font-weight:650}
+.end{text-align:center;font-weight:800;font-size:23px;margin-top:28px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:24px}
+.nav button{flex:1}
+.progress{text-align:center;color:var(--muted);font-size:14px;margin-top:12px}
+footer{text-align:center;color:var(--muted);padding:25px 10px;font-size:13px}
+.light{--bg:#eef1f6;--card:#fff;--text:#171b23;--muted:#596273;--accent:#4267b2;--border:#d8dee9}
+body.light{background:linear-gradient(#f6f8fb,#e9edf4)}
+body.light .panel{background:#fff;box-shadow:0 15px 40px #0001}
+body.light button,body.light select{background:#f3f5f8;color:#171b23}
+body.light .quote{background:#f3f6fb}
+@media(max-width:600px){.panel{padding:17px;border-radius:17px}.chapter p{font-size:17px;line-height:1.68}.chapter h2{font-size:25px}.nav{flex-direction:column}}
+</style>
+</head>
+<body>
+<header>
+<h1>ČAS SE RESETOVAL</h1>
+<div class="subtitle">ZÁHADA · 2. DÍL</div>
+</header>
+<div class="wrap">
+<div class="controls">
+<button onclick="changeSize(-1)">A−</button>
+<button onclick="resetSize()">A</button>
+<button onclick="changeSize(1)">A+</button>
+<button onclick="toggleTheme()">🌙 / ☀️</button>
+<select id="chapterSelect" onchange="showChapter(this.value)"></select>
+</div>
+<div class="panel" id="book"></div>
+<div class="progress" id="progress"></div>
+</div>
+<footer>ČAS SE RESETOVAL: ZÁHADA · 2. díl</footer>
+
+<script>
+const chapters = [
+["Kapitola 1 — 7:31",`
+<p>Patrik se probudil.</p>
+<p>Chvíli jen ležel a koukal do stropu. V hlavě měl pořád včerejší večer.</p>
+<p>Dům.<br>Fotografie.<br>Telefon.<br>A hlavně větu:</p>
+<div class="quote">„Čas se resetoval.“</div>
+<p>Natáhl ruku pro mobil.</p><p><b>7:31.</b></p>
+<p>„Dobře… normální čas.“</p>
+<p>Pak se podíval na staré digitální hodiny na stole.</p><p><b>20:28.</b></p>
+<p>Patrik ztuhl.</p>
+<p>Vzal hodiny do ruky a zmáčkl tlačítko. Displej zhasl. Po několika sekundách se znovu rozsvítil.</p>
+<p><b>20:28.</b></p>
+<p>Patrikovi přeběhl mráz po zádech.</p>
+<p>Otevřel skupinu.</p>
+<div class="quote"><b>Patrik:</b> Máte taky něco divnýho s časem?<br><br><b>Vojta:</b> Ty taky?!</div>`],
+["Kapitola 2 — VŠICHNI STEJNĚ",`
+<p>Patrik okamžitě zavolal Vojtovi.</p>
+<p>„Kolik máš na mobilu?“</p><p>„7:31.“</p><p>„A hodiny?“</p>
+<p>Chvíli bylo ticho.</p><p>„20:28.“</p>
+<p>Patrik se posadil.</p><p>„Zavolej Adamovi.“</p>
+<p>Za chvíli byli všichni čtyři na hovoru.</p>
+<p>Adam měl 7:31. Lukáš také.</p>
+<p>Ale všechny jejich hodiny ukazovaly:</p>
+<div class="quote">20:28</div>
+<p>„To už není náhoda,“ řekl Adam.</p>
+<p>Najednou se z telefonu ozvalo:</p><p><b>Tik…</b></p>
+<p>Všichni ztichli.</p><p><b>Tik…</b></p>
+<p>„Slyšíte to?“ zeptal se Lukáš.</p><p><b>Tik…</b></p>
+<p>A pak všechno přestalo.</p>`],
+["Kapitola 3 — ZVONEK",`
+<p>Ozval se školní zvonek.</p>
+<p>Patrik otevřel oči.</p>
+<p>Seděl ve třídě.</p>
+<p>Učitel stál u tabule.</p>
+<p>„Patriku?“</p>
+<p>Patrik se rozhlédl. Všechno bylo normální.</p>
+<p>Podíval se na mobil.</p><p><b>7:31.</b></p>
+<p>„Takže jsem usnul…“</p>
+<p>Podíval se na probíhající hovor.</p><p><b>Vojta — 00:47:13</b></p>
+<p>Patrikovi spadla brada.</p>
+<p>Hovor stále běžel.</p>
+<p>„Vojto?“</p>
+<p>Nic.</p>
+<p>Patrik hovor ukončil.</p>
+<p>Pak se podíval na hodiny ve třídě.</p><p><b>7:31.</b></p>
+<p>Usmál se.</p><p>„Dobře. Už jsem se zbláznil.“</p>
+<p>Jenže když otevřel sešit, na první stránce bylo jeho vlastním písmem napsáno:</p>
+<div class="quote">20:28</div>`],
+["Kapitola 4 — STEJNÝ SEN",`
+<p>O přestávce přišel Vojta.</p>
+<p>„Hele…“</p>
+<p>Patrik se otočil.</p>
+<p>„Měl jsem fakt divnej sen.“</p>
+<p>Patrik nic neřekl.</p>
+<p>„Byl jsem doma. Všude bylo 20:28. Pak jsme si volali. A pak jsem slyšel takový…“</p>
+<p>„Tikání.“</p>
+<p>Vojta ztichl.</p><p>„Jo.“</p>
+<p>Přišel Adam.</p><p>„Vy jste to měli taky?“</p>
+<p>Patrik pomalu přikývl.</p>
+<p>Lukáš stál několik metrů od nich.</p>
+<p>Nevypadal překvapeně.</p>
+<p>Spíš vyděšeně.</p>
+<p>Patrik si toho všiml.</p><div class="quote">„Lukáši?“</div>
+<p>Lukáš neodpověděl.</p>`],
+["Kapitola 5 — FOTOGRAFIE",`
+<p>Po škole se všichni sešli u Patrika.</p>
+<p>Na stůl položili všechno, co měli z prvního dílu.</p>
+<p>Fotografie.<br>Staré poznámky.<br>Klíč.<br>Mapa.<br>Telefonní číslo.</p>
+<p>A nakonec papírek:</p>
+<div class="quote">VE 22:00 SI VYBERU JEDNOHO Z VÁS.</div>
+<p>Vojta ho otočil.</p>
+<p>Na zadní straně bylo něco nového.</p><div class="quote">20:28</div>
+<p>„Tohle tam předtím nebylo,“ řekl Patrik.</p>
+<p>Adam zavrtěl hlavou.</p><p>„Jsi si jistý?“</p>
+<p>Patrik se zamyslel.</p>
+<p>A právě to bylo nejhorší.</p><p><b>Nevěděl.</b></p>`],
+["Kapitola 6 — DŮM",`
+<p>Večer se vrátili k opuštěnému domu.</p>
+<p>Nikdo z nich nechtěl jít dovnitř.</p>
+<p>Ale dveře byly otevřené.</p>
+<p>„Takže nás čeká,“ řekl Vojta.</p>
+<p>Nikdo se nezasmál.</p>
+<p>Uvnitř bylo všechno stejné.</p>
+<p>Až na jednu věc.</p>
+<p>Na zemi stály staré hodiny.</p>
+<div class="quote">20:28</div>
+<p>Patrik k nim přišel.</p>
+<p>Na zadní straně bylo vyryto:</p>
+<div class="quote">CHVALTICE — 20:28</div>
+<p>„To není čas,“ řekl.</p>
+<p>„Co teda?“</p>
+<p>Patrik zvedl oči.</p><p>„Možná místo.“</p>`],
+["Kapitola 7 — ČÍSLO 28",`
+<p>Našli starou mapu Chvaltice.</p>
+<p>A opravdu.</p>
+<p>V jedné části města byl zakreslený starý dům s číslem <b>28</b>.</p>
+<p>„Jdeme tam?“ zeptal se Adam.</p><p>Patrik přikývl.</p><p>„Musíme.“</p>
+<p>Když dorazili, dům vypadal opuštěně.</p>
+<p>Žádné jméno.<br>Žádný zvonek.</p>
+<p>Jen číslo:</p><div class="quote">28</div>
+<p>Patrik zaklepal.</p><p>Nic.</p>
+<p>Zaklepal znovu.</p>
+<div class="quote">Tik… tik… tik…</div>
+<p>Všichni ztuhli.</p>
+<p>Patrik vytáhl mobil.</p><p>Displej ukazoval:</p><div class="quote">20:28</div>
+<p>Dveře se pomalu odemkly.</p>`],
+["Kapitola 8 — MÍSTNOST",`
+<p>Uvnitř byla místnost bez jediných hodin.</p>
+<p>Na stěnách ale zůstaly prázdné obdélníky. Jako kdyby tam kdysi visely desítky hodin.</p>
+<p>Uprostřed místnosti ležel papír.</p>
+<p>Patrik ho zvedl.</p>
+<div class="quote">ČAS NENÍ TO, CO SE RESETUJE.<br><br>RESETUJE SE TO, CO SI PAMATUJETE.</div>
+<p>„Co to má znamenat?“ zašeptal Adam.</p>
+<p>Vojta se podíval na ostatní.</p>
+<p>„Co když si něco pamatujeme špatně?“</p>
+<p>V tu chvíli se dveře za nimi zabouchly.</p>
+<p>Na jejich povrchu se objevila nová věta:</p>
+<div class="quote">JEDEN Z VÁS UŽ TO ZAŽIL.</div>`],
+["Kapitola 9 — LUKÁŠ",`
+<p>Nikdo nic neřekl.</p>
+<p>Patrik se podíval na Adama.</p>
+<p>Adam na Vojtu.</p>
+<p>Vojta na Lukáše.</p>
+<p>Lukáš stál úplně nehybně.</p>
+<div class="quote">„Lukáši…“</div>
+<p>Lukáš sklopil hlavu.</p>
+<p>„Já ten dům znám.“</p>
+<p>„Cože?“</p>
+<p>„Byl jsem tady.“</p>
+<p>„Kdy?“</p>
+<p>Dlouhé ticho.</p>
+<p>„Před rokem.“</p>
+<p>Patrikovi se sevřel žaludek.</p>
+<p>„S kým?“</p>
+<p>Lukáš zavrtěl hlavou.</p>
+<p>„Nevím.“</p>
+<p>A v tu chvíli zavibrovaly všechny čtyři telefony.</p>
+<p>Na všech bylo úplně stejné oznámení:</p>
+<div class="quote">LUKÁŠ SI NEVZPOMÍNÁ VŠECHNO.</div>`],
+["Kapitola 10 — 20:29",`
+<p>Staré hodiny v rohu místnosti se rozsvítily.</p>
+<div class="quote">20:28</div>
+<p>Všichni čekali.</p>
+<p>Čísla se změnila.</p>
+<div class="quote">20:29</div>
+<p>Poprvé se čas neposunul zpátky.</p>
+<p>Poprvé šel dopředu.</p>
+<p>Lukáš se podíval na Patrika.</p>
+<p>„Musíme odsud pryč.“</p>
+<p>Patrik se zeptal:</p><p>„Proč?“</p>
+<p>Lukáš odpověděl:</p>
+<div class="quote">„Protože teď už si začínám vzpomínat.“</div>
+<p>Světlo zhaslo.</p>
+<p>A v úplné tmě se ozvalo:</p>
+<div class="quote">Tik…<br>Tik…<br>Tik…</div>
+<p>Pak hlas:</p>
+<div class="quote">„Tentokrát jste se nevrátili.“</div>
+<div class="end">KONEC 2. DÍLU<br><br>Pokračování příště… 🕰️</div>`]
+];
+
+const book=document.getElementById("book"), sel=document.getElementById("chapterSelect"), progress=document.getElementById("progress");
+chapters.forEach((c,i)=>{let s=document.createElement("option");s.value=i;s.textContent=c[0];sel.appendChild(s);
+let d=document.createElement("section");d.className="chapter"+(i===0?" active":"");d.innerHTML="<h2>"+c[0]+"</h2>"+c[1]+`<div class="nav"><button onclick="showChapter(${Math.max(0,i-1)})">← Předchozí</button><button onclick="showChapter(${Math.min(chapters.length-1,i+1)})">Další →</button></div>`;book.appendChild(d)});
+function showChapter(i){i=Number(i);document.querySelectorAll(".chapter").forEach((x,n)=>x.classList.toggle("active",n===i));sel.value=i;progress.textContent=`Kapitola ${i+1} z ${chapters.length}`;window.scrollTo({top:0,behavior:"smooth"})}
+let size=18;
+function changeSize(x){size=Math.max(14,Math.min(24,size+x));document.querySelectorAll(".chapter p,.quote").forEach(e=>e.style.fontSize=size+"px")}
+function resetSize(){size=18;document.querySelectorAll(".chapter p,.quote").forEach(e=>e.style.fontSize="")}
+function toggleTheme(){document.body.classList.toggle("light")}
+showChapter(0);
+</script>
+</body>
+</html>
